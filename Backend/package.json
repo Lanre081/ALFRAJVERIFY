@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/Lanre081/ALFRAJVERIFY/issues"
   },
-  "homepage": "https://github.com/Lanre081/ALFRAJVERIFY#readme"
+  "homepage": "https://github.com/Lanre081/ALFRAJVERIFY#readme",
+  "dependencies": {
+    "nodemon": "^3.1.11"
+  }
 }
