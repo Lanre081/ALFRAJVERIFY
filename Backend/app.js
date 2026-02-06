@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 const cors = require("cors");
-const connectDB = require("./DB/Connections/db.connect");
+const connectDB = require("./DB/Connections/connectDB");
 const { errors } = require("celebrate");
 
 
