@@ -65,7 +65,7 @@ const loginUser = async (req, res) => {
     res.status(200).json({ success: true, user, token });
   } catch (error) {
     console.error(error, error.message);
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+    return res.status(500).json({ success: false, message: "An error ossured" });
   }
 };
 
