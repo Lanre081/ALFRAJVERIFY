@@ -20,6 +20,7 @@ const registerUser = async (req, res) => {
       ...data,
       email,
       password: pwdHash,
+      balance: 0
     });
 
     // Sanitized user data
