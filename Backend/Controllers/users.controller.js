@@ -13,13 +13,11 @@ const registerUser = async (req, res) => {
       password: pwdHash,
     });
     const { password: userPwd, ...userData } = createdUser;
-    res
-      .status(201)
-      .json({
-        success: true,
-        message: "User created successfully",
-        user: userData,
-      });
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: userData,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "An error occured" });
@@ -56,15 +54,15 @@ const loginUser = async (req, res) => {
   }
 };
 
-const getAllUsers = async(req,res)=>{
-    try{
-        const users = await usersCollection.find()
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await usersCollection.find();
 
-        res.status(200).json({success: true, users})
-    }catch(err){
-        console.error(err)
-        res.status(500).json({success: false, message: "An error occured"})
-    }
-}
+    res.status(200).json({ success: true, users });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "An error occured" });
+  }
+};
 
 module.exports = { registerUser, loginUser, getAllUsers };
