@@ -1,6 +1,6 @@
 const { celebrate } = require("celebrate");
 const express = require("express");
-const {registerSchema, loginSchema} = require("../Schemas/users.schema");
+const { registerSchema, loginSchema } = require("../Schemas/users.schema");
 const {
   registerUser,
   loginUser,
