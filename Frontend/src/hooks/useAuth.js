@@ -10,7 +10,7 @@ export default function useAuth() {
     setLoading(true);
     setError(null);
     try {
-      const response= await apiCall();
+      const response = await apiCall();
       setResult(response);
     } catch (err) {
       setError(err);
