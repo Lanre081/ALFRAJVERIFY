@@ -64,20 +64,7 @@ const loginUser = async (req, res) => {
     }
 
     const user = existingUser.toJSON();
-    console.log(user);
-
-    const tokens = {
-      refreshToken: signRefreshToken(user),
-      accessToken: signAccessToken(user),
-    };
-
-    const refreshTokenHash = await bcrypt.hash(
-      tokens.refreshToken,
-      hashingRounds,
-    );
-
-    existingUser.refreshToken = refreshTokenHash;
-    await existingUser.save();
+    const tokens = generateNewTokens(user)
 
     res.status(200).json({ success: true, tokens });
   } catch (error) {

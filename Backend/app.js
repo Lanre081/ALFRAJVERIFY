@@ -20,7 +20,7 @@ app.use(
   }),
 );
 
-app.use(express.json()); // Parse first
+app.use(express.json());
 
 app.use("/auth", authRouter);
 app.use("/users", userRouter);

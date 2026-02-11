@@ -1,7 +1,9 @@
-const jwt = require("jsonwebtoken");
 const usersCollection = require("../DB/Models/users.model");
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs")
 
 const signAccessToken = (user) => {
   return jwt.sign({ ...user, userId: user.id }, JWT_ACCESS_SECRET, {
@@ -27,8 +29,10 @@ async function verifyRefreshToken(token) {
     throw new Error("Invalid or expired token");
   }
 
+  const { userId } = userData;
+
   const user = await usersCollection
-    .findById(userData.id)
+    .findById(userId)
     .select("+refreshToken");
   if (!user) throw new Error("User not found");
 
