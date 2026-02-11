@@ -1,3 +1,5 @@
+const usersCollection = require("../DB/Models/users.model");
+
 const getAllUsers = async (req, res) => {
   try {
     const users = await usersCollection.find();
