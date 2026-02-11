@@ -1,6 +1,5 @@
 const usersCollection = require("../DB/Models/users.model");
 const bcrypt = require("bcryptjs");
-const JWT_SECRET = process.env.JWT_SECRET;
 const hashingRounds = 10;
 const jwt = require("jsonwebtoken");
 
@@ -58,9 +57,7 @@ const loginUser = async (req, res) => {
 
     const user = existingUser.toJSON();
 
-    const token = jwt.sign({ id: user.id, email }, JWT_SECRET, {
-      expiresIn: "7d",
-    });
+
 
     res.status(200).json({ success: true, user, token });
   } catch (error) {

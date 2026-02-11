@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    refreshToken: { type: String, select: false },
   },
   {
     timestamps: true,
@@ -48,7 +49,6 @@ userSchema.set("toJSON", {
     return obj;
   },
 });
-
 
 const User = mongoose.model("User", userSchema, "users");
 
