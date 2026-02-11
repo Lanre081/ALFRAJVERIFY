@@ -2,8 +2,6 @@ const usersCollection = require("../DB/Models/users.model");
 const bcrypt = require("bcryptjs");
 const hashingRounds = 10;
 const {
-  signRefreshToken,
-  signAccessToken,
   verifyRefreshToken,
   generateNewTokens,
 } = require("../Utils/tokens.utils");
