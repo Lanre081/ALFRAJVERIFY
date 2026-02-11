@@ -64,7 +64,7 @@ const loginUser = async (req, res) => {
     }
 
     const user = existingUser.toJSON();
-    const tokens = generateNewTokens(user)
+    const tokens = generateNewTokens(user);
 
     res.status(200).json({ success: true, tokens });
   } catch (error) {
@@ -84,7 +84,6 @@ const refreshTokenController = async (req, res) => {
 
     res.status(200).json({ success: true, tokens });
   } catch (err) {
-    console.error(err, err.message);
     if (
       err.message.includes("token") ||
       err.message.includes("User not found") ||
@@ -93,6 +92,7 @@ const refreshTokenController = async (req, res) => {
       return res.status(401).json({ success: false, message: err.message });
     }
 
+    console.error(err, err?.message);
     res.status(500).json({ success: false, message: "An error occured" });
   }
 };
