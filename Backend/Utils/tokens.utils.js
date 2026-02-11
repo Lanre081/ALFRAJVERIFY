@@ -11,11 +11,9 @@ const signAccessToken = (user) => {
 };
 
 const signRefreshToken = (user) => {
-  return jwt.sign(
-    { id: user.id },
-    JWT_REFRESH_SECRET,
-    { expiresIn: "7d" },
-  );
+  return jwt.sign({ id: user.id, name: user.name }, JWT_REFRESH_SECRET, {
+    expiresIn: "7d",
+  });
 };
 
 const verifyRefreshToken = (token) => {

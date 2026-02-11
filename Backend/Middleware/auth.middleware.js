@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const { verifyAccessToken } = require("../Utils/tokens.utils");
 
 const authMiddleware = (req, res, next) => {

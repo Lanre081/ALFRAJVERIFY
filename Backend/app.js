@@ -8,6 +8,7 @@ const connectDB = require("./DB/Connections/connectDB");
 const { errors } = require("celebrate");
 
 //  Routers
+const authRouter = require("./Routers/auth.route");
 const userRouter = require("./Routers/users.route");
 
 
@@ -21,6 +22,7 @@ app.use(
 
 app.use(express.json()); // Parse first
 
+app.use("/auth", authRouter);
 app.use("/users", userRouter);
 
 app.get("/health", (req, res) => {
