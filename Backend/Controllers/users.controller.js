@@ -1,7 +1,7 @@
 const usersCollection = require("../DB/Models/users.model");
 const bcrypt = require("bcryptjs");
 const hashingRounds = 10;
-const jwt = require("jsonwebtoken");
+const { signRefreshToken, signAccessToken } = require("../Utils/tokens.utils");
 
 const registerUser = async (req, res) => {
   try {
@@ -47,9 +47,12 @@ const loginUser = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    const pwdsMatch = await bcrypt.compare(password, existingUser.password);
+    const passwordsMatch = await bcrypt.compare(
+      password,
+      existingUser.password,
+    );
 
-    if (!pwdsMatch) {
+    if (!passwordsMatch) {
       return res
         .status(401)
         .json({ success: false, message: "Invalid password" });
@@ -57,12 +60,22 @@ const loginUser = async (req, res) => {
 
     const user = existingUser.toJSON();
 
+    const tokens = {
+      refreshToken: signRefreshToken(user),
+      accessToken: signAccessToken(user),
+    };
 
+    const refreshTokenHash = bcrypt.hash(tokens.refreshToken, hashingRounds);
 
-    res.status(200).json({ success: true, user, token });
+    existingUser.refreshToken = refreshTokenHash;
+    await existingUser.save();
+
+    res.status(200).json({ success: true, user, tokens });
   } catch (error) {
     console.error(error, error.message);
-    return res.status(500).json({ success: false, message: "An error ossured" });
+    return res
+      .status(500)
+      .json({ success: false, message: "An error ossured" });
   }
 };
 

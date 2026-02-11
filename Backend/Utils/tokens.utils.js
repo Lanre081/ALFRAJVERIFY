@@ -22,4 +22,13 @@ const verifyRefreshToken = (token) => {
   return jwt.verify(token, JWT_REFRESH_SECRET);
 };
 
-module.exports = { signAccessToken, signRefreshToken, verifyRefreshToken };
+const verifyAccessToken = (token) => {
+  return jwt.verify(token, JWT_ACCESS_SECRET);
+};
+
+module.exports = {
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
+  verifyAccessToken,
+};
