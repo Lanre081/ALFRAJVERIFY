@@ -1,7 +1,12 @@
 const usersCollection = require("../DB/Models/users.model");
 const bcrypt = require("bcryptjs");
 const hashingRounds = 10;
-const { signRefreshToken, signAccessToken } = require("../Utils/tokens.utils");
+const {
+  signRefreshToken,
+  signAccessToken,
+  verifyRefreshToken,
+  generateNewTokens,
+} = require("../Utils/tokens.utils");
 
 const registerUser = async (req, res) => {
   try {
@@ -34,7 +39,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-
 const loginUser = async (req, res) => {
   try {
     const { password, email } = req.body;
@@ -60,18 +64,22 @@ const loginUser = async (req, res) => {
     }
 
     const user = existingUser.toJSON();
+    console.log(user);
 
     const tokens = {
       refreshToken: signRefreshToken(user),
       accessToken: signAccessToken(user),
     };
 
-    const refreshTokenHash = await bcrypt.hash(tokens.refreshToken, hashingRounds);
+    const refreshTokenHash = await bcrypt.hash(
+      tokens.refreshToken,
+      hashingRounds,
+    );
 
     existingUser.refreshToken = refreshTokenHash;
     await existingUser.save();
 
-    res.status(200).json({ success: true, user, tokens });
+    res.status(200).json({ success: true, tokens });
   } catch (error) {
     console.error(error, error.message);
     return res
@@ -80,5 +88,26 @@ const loginUser = async (req, res) => {
   }
 };
 
+const refreshTokenController = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
 
-module.exports = { registerUser, loginUser };
+    const user = await verifyRefreshToken(refreshToken);
+    const tokens = await generateNewTokens(user);
+
+    res.status(200).json({ success: true, tokens });
+  } catch (err) {
+    console.error(err, err.message);
+    if (
+      err.message.includes("token") ||
+      err.message.includes("User not found") ||
+      err.message.includes("mismatch")
+    ) {
+      return res.status(401).json({ success: false, message: err.message });
+    }
+
+    res.status(500).json({ success: false, message: "An error occured" });
+  }
+};
+
+module.exports = { registerUser, loginUser, refreshTokenController };
