@@ -9,7 +9,11 @@ const {
 } = require("../Controllers/auth.controller");
 const router = express.Router();
 
-router.post("/refresh", celebrate({ body: refreshTokenSchema }), refreshTokenController);
+router.post(
+  "/refresh",
+  celebrate({ body: refreshTokenSchema }),
+  refreshTokenController,
+);
 router.post("/register", celebrate({ body: registerSchema }), registerUser);
 router.post("/login", celebrate({ body: loginSchema }), loginUser);
 

@@ -11,6 +11,8 @@ const { errors } = require("celebrate");
 const authRouter = require("./Routers/auth.route");
 const userRouter = require("./Routers/users.route");
 
+// Middlewares
+const { authLimiter } = require("./Middleware/rate-limiter.middleware");
 
 connectDB();
 
@@ -22,7 +24,7 @@ app.use(
 
 app.use(express.json());
 
-app.use("/auth", authRouter);
+app.use("/auth", authLimiter, authRouter);
 app.use("/users", userRouter);
 
 app.get("/health", (req, res) => {

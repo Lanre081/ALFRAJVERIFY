@@ -29,7 +29,7 @@ const registerUser = async (req, res) => {
   } catch (error) {
     if (error.code === 11000) {
       return res
-        .status(401)
+        .status(403)
         .json({ success: false, message: "User already registered" });
     }
     console.error(error);
@@ -61,8 +61,10 @@ const loginUser = async (req, res) => {
         .json({ success: false, message: "Invalid password" });
     }
 
-    const user = existingUser.toJSON();
-    const tokens = generateNewTokens(user);
+    const user = existingUser;
+    const tokens = await generateNewTokens(user);
+
+    console.log(tokens)
 
     res.status(200).json({ success: true, tokens });
   } catch (error) {
@@ -77,6 +79,8 @@ const refreshTokenController = async (req, res) => {
   try {
     const { refreshToken } = req.body;
 
+    console.log(refreshToken)
+    
     const user = await verifyRefreshToken(refreshToken);
     const tokens = await generateNewTokens(user);
 

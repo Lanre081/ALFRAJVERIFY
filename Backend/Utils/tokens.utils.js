@@ -3,7 +3,7 @@ const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
 
 const signAccessToken = (user) => {
   return jwt.sign({ ...user }, JWT_ACCESS_SECRET, {
@@ -26,14 +26,13 @@ async function verifyRefreshToken(token) {
   try {
     userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
   } catch (err) {
-    throw new Error("Invalid or expired token");
+    throw new Error("Invalid token");
   }
 
-  const { id } = userData;
+  const { userId } = userData;
 
-  const user = await usersCollection
-    .findById(id)
-    .select("+refreshToken");
+  const user = await usersCollection.findById(userId).select("+refreshToken");
+
   if (!user) throw new Error("User not found");
 
   const match = await bcrypt.compare(token, user.refreshToken);
