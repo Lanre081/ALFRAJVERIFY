@@ -13,6 +13,7 @@ const userRouter = require("./Routers/users.route");
 
 // Middlewares
 const { authLimiter } = require("./Middleware/rate-limiter.middleware");
+const transactionRouter = require("./Routers/payments.route");
 
 connectDB();
 
@@ -24,6 +25,7 @@ app.use(
 
 app.use(express.json());
 
+app.use("/transaction", transactionRouter);
 app.use("/auth", authLimiter, authRouter);
 app.use("/users", userRouter);
 
