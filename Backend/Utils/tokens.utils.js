@@ -35,7 +35,7 @@ async function verifyRefreshToken(token) {
 
   if (!user) throw new Error("User not found");
 
-  const match = token === user.refreshToken
+  const match = token === user.refreshToken;
   if (!match) throw new Error("Refresh token mismatch");
 
   return user;
@@ -45,9 +45,8 @@ async function generateNewTokens(user) {
   const accessToken = signAccessToken(user);
   const refreshToken = signRefreshToken(user);
 
-
-  user.refreshToken = refreshToken
-  await user.save();
+  user.refreshToken = refreshToken;
+  await usersCollection.findByIdAndUpdate(user.id, { refreshToken });
 
   return { accessToken, refreshToken };
 }
