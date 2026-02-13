@@ -4,7 +4,7 @@ const hashingRounds = 10;
 const {
   verifyRefreshToken,
   generateNewTokens,
-} = require("../Utils/tokens.utils");
+} = require("../Utils/Tokens/tokens.utils");
 
 const registerUser = async (req, res) => {
   try {
@@ -61,10 +61,8 @@ const loginUser = async (req, res) => {
         .json({ success: false, message: "Invalid password" });
     }
 
-    const user = existingUser;
+    const user = existingUser.toJSON()
     const tokens = await generateNewTokens(user);
-
-    console.log(tokens)
 
     res.status(200).json({ success: true, tokens });
   } catch (error) {
@@ -79,10 +77,8 @@ const refreshTokenController = async (req, res) => {
   try {
     const { refreshToken } = req.body;
 
-    console.log(refreshToken)
-    
     const user = await verifyRefreshToken(refreshToken);
-    const tokens = await generateNewTokens(user);
+    const tokens = await generateNewTokens(user.toJSON());
 
     res.status(200).json({ success: true, tokens });
   } catch (err) {

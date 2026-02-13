@@ -35,7 +35,7 @@ async function verifyRefreshToken(token) {
 
   if (!user) throw new Error("User not found");
 
-  const match = await bcrypt.compare(token, user.refreshToken);
+  const match = token === user.refreshToken
   if (!match) throw new Error("Refresh token mismatch");
 
   return user;
@@ -45,9 +45,8 @@ async function generateNewTokens(user) {
   const accessToken = signAccessToken(user);
   const refreshToken = signRefreshToken(user);
 
-  const hashed = await bcrypt.hash(refreshToken, 10);
 
-  user.refreshToken = hashed;
+  user.refreshToken = refreshToken
   await user.save();
 
   return { accessToken, refreshToken };

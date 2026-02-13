@@ -2,7 +2,7 @@ const rateLimiter = require("express-rate-limit");
 
 const authLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
 //   store: {}, Add redis here later
