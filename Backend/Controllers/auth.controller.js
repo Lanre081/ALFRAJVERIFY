@@ -4,7 +4,7 @@ const hashingRounds = 10;
 const {
   verifyRefreshToken,
   generateNewTokens,
-} = require("../Utils/Tokens/tokens.utils");
+} = require("../Utils/tokens.utils");
 
 const registerUser = async (req, res) => {
   try {
