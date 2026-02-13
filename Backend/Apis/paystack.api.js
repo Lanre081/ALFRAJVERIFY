@@ -1,7 +1,7 @@
 const axios = require("axios");
 const PAYSTACK_API_KEY = process.env.PAYSTACK_API_KEY;
 
-const url = "https://franceverified.com/api/v1";
+const url = "https://api.paystack.co";
 
 const api = axios.create({
   baseURL: url,
