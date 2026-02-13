@@ -1,5 +1,5 @@
 const axios = require("axios");
-const FRANCE_VERIFIED_API_KEY = process.env.FRANCE_VERIFIED_API_KEY;
+const PAYSTACK_API_KEY = process.env.PAYSTACK_API_KEY;
 
 const url = "https://franceverified.com/api/v1";
 
@@ -9,10 +9,8 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  config.headers.authorization = `Bearer ${FRANCE_VERIFIED_API_KEY}`;
+  config.headers.authorization = `Bearer ${PAYSTACK_API_KEY}`;
   return config;
 });
-
-
 
 module.exports = api;
