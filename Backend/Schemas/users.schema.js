@@ -5,11 +5,12 @@ const username = Joi.string()
   .trim()
   .min(3)
   .max(100)
-  .pattern(/^[\p{L}\p{M}\d'’\.\-\s]+$/u)
+  .pattern(/^[\p{L}\p{M}\d_]{3,30}$/u)
   .messages({
     "string.empty": "Username is required",
     "string.min": "Username must be at least 3 characters",
-    "string.pattern.base": "Username contains invalid characters",
+    "string.pattern.base":
+      "Username must be 3-30 characters and contain only letters, numbers, or underscores",
   })
   .required();
 

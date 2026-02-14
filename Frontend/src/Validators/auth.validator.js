@@ -37,7 +37,7 @@ export function validateUserRegister(user) {
     errors.username = "Name is required";
   } else if (user.username?.length < 3) {
     errors.username = "Name must be at least 3 characters";
-  } else if (!/^[\p{L}\p{M}\d'’\.\-\s]+$/u.test(user.username)) {
+  } else if (!/^[\p{L}\p{M}\d_]{3,30}$/u.test(user.username)) {
     errors.username = "Username contains invalid characters";
   }
 

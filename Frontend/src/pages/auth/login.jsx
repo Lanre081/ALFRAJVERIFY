@@ -29,6 +29,12 @@ function Login() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    if (name === "username") {
+      const value = e.target.value.replace(/\s/g, "");
+      setUserData((prev) => ({ ...prev, username: value }));
+      return;
+    }
+
     setUserData((prev) => ({
       ...prev,
       [name]: value,
@@ -67,9 +73,8 @@ function Login() {
       const { message } = validationErrs;
 
       backendFieldErrors = `${message}`; // or just message if you prefer
-          setBackendErrs(backendFieldErrors);
+      setBackendErrs(backendFieldErrors);
     }
-
   }, [error]);
 
   return (

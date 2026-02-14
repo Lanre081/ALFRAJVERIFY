@@ -22,6 +22,12 @@ function Signup() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    if (name === "username") {
+      const value = e.target.value.replace(/\s/g, "");
+      setUserData((prev) => ({ ...prev, username: value }));
+      return;
+    }
+
     setUserData((prev) => ({
       ...prev,
       [name]: value,
