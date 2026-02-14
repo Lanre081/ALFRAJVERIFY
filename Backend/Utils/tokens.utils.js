@@ -12,7 +12,7 @@ const signAccessToken = (user) => {
 };
 
 const signRefreshToken = (user) => {
-  return jwt.sign({ userId: user.id }, JWT_REFRESH_SECRET, {
+  return jwt.sign({ id: user.id }, JWT_REFRESH_SECRET, {
     expiresIn: "7d",
   });
 };
@@ -29,9 +29,9 @@ async function verifyRefreshToken(token) {
     throw new Error("Invalid token");
   }
 
-  const { userId } = userData;
+  const { id } = userData;
 
-  const user = await usersCollection.findById(userId).select("+refreshToken");
+  const user = await usersCollection.findById(id).select("+refreshToken");
 
   if (!user) throw new Error("User not found");
 
