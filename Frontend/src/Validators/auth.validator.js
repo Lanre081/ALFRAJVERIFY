@@ -1,4 +1,5 @@
 import isEmail from "validator/lib/isEmail";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 export function validateUserLogin(user) {
   const errors = {};
@@ -46,6 +47,8 @@ export function validateUserRegister(user) {
     errors.username = "Name is required";
   } else if (user.username?.length < 3) {
     errors.username = "Name must be at least 3 characters";
+  } else if(!/^[\p{L}\p{M}\d'’\.\-\s]+$/.test(user.username)){
+    errors.username = "Username contains invalid characters"
   }
 
   // Email

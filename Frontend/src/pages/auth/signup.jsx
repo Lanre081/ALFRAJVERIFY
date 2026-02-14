@@ -37,7 +37,15 @@ function Signup() {
       return;
     }
 
-    register(userData);
+    if (userData.phoneNumber) {
+      const phoneNumber = parsePhoneNumberFromString(
+        userData.phoneNumber,
+        "NG",
+      );
+      register({ ...userData, phoneNumber });
+    } else {
+      register(userData);
+    }
   };
 
   useEffect(() => {
@@ -63,11 +71,12 @@ function Signup() {
 
           <form onSubmit={handleSubmit} noValidate>
             {/* FORM-LEVEL ERROR */}
-            {fieldErrors.form || error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {fieldErrors.form || error}
-              </Alert>
-            )}
+            {fieldErrors.form ||
+              (error && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {fieldErrors.form || error}
+                </Alert>
+              ))}
 
             <TextField
               fullWidth

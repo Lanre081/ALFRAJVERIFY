@@ -1,4 +1,5 @@
 const { Joi } = require("celebrate");
+const { parsePhoneNumberFromString } = require("libphonenumber-js");
 
 const username = Joi.string()
   .trim()
@@ -6,9 +7,9 @@ const username = Joi.string()
   .max(100)
   .pattern(/^[\p{L}\p{M}\d'’\.\-\s]+$/u)
   .messages({
-    "string.empty": "Name is required",
-    "string.min": "Name must be at least 3 characters",
-    "string.pattern.base": "Name contains invalid characters",
+    "string.empty": "Username is required",
+    "string.min": "Username must be at least 3 characters",
+    "string.pattern.base": "Username contains invalid characters",
   })
   .required();
 
@@ -35,10 +36,27 @@ const password = Joi.string()
   })
   .required();
 
+const phoneNumber = Joi.string()
+  .custom((value, helpers) => {
+    if (!value) return value; // optional, skip if empty
+
+    const phone = parsePhoneNumberFromString(value, "NG"); // NG for Nigeria
+    if (!phone || !phone.isValid()) {
+      return helpers.error("any.invalid");
+    }
+
+    // Replace with normalized E.164
+    return phone.number;
+  })
+  .messages({
+    "any.invalid": "Please enter a valid phone number",
+  });
+
 const registerSchema = Joi.object({
-  username: username,
-  email: email,
-  password: password,
+  username,
+  email,
+  password,
+  phoneNumber,
   confirmPassword: Joi.any().valid(Joi.ref("password")).required().messages({
     "any.only": "Passwords must match",
     "any.required": "Confirm password is required",
@@ -48,8 +66,8 @@ const registerSchema = Joi.object({
   .options({ stripUnknown: true });
 
 const loginSchema = Joi.object({
-  email: email,
-  password: password,
+  email,
+  password,
 })
   .required()
   .options({ stripUnknown: true });

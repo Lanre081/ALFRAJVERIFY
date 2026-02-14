@@ -6,7 +6,7 @@
   import { useState, useEffect } from "react";
   import { Mail, Lock } from "lucide-react";
   import useAuth from "../../hooks/useAuth.js";
-  import { setAccessToken, setRefreshToken } from "../../Helpers/Auth/tokens.js";
+  import { saveAccessToken, saveRefreshToken } from "../../Helpers/Auth/tokens.js";
   import { validateUserLogin } from "../../Validators/auth.validator.js";
 
   function Login() {
@@ -49,8 +49,8 @@
 
     useEffect(() => {
       if (data?.success) {
-        setAccessToken(data?.tokens?.accessToken);
-        setRefreshToken(data?.tokens?.refreshToken)
+        saveAccessToken(data?.tokens?.accessToken);
+        saveRefreshToken(data?.tokens?.refreshToken)
         navigate("/");
       }
     }, [data]);
