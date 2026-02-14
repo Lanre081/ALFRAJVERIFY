@@ -9,20 +9,24 @@ export default function useAuth() {
   const execute = async (apiCall) => {
     setLoading(true);
     setError(null);
+
     try {
       const response = await apiCall();
       setResult(response);
     } catch (err) {
-      setError(err);
-      console.error(err, err?.response, err?.data);
+      const message =
+        err?.response?.data?.message || "Something went wrong";
+
+      setError(message);
+      console.error(err, err?.response);
     } finally {
       setLoading(false);
     }
   };
 
   const methods = {
-    login: (payload) => execute(authApi.login(payload)),
-    register: (payload) => execute(authApi.register(payload)),
+    login: (payload) => execute(() => authApi.login(payload)),
+    register: (payload) => execute(() => authApi.register(payload)),
   };
 
   return { data, loading, error, ...methods };

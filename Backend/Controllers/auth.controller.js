@@ -46,8 +46,8 @@ const loginUser = async (req, res) => {
 
     if (!existingUser) {
       return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+        .status(401)
+        .json({ success: false, message: "Invalid credentials" });
     }
 
     const passwordsMatch = await bcrypt.compare(
@@ -58,7 +58,7 @@ const loginUser = async (req, res) => {
     if (!passwordsMatch) {
       return res
         .status(401)
-        .json({ success: false, message: "Invalid password" });
+        .json({ success: false, message: "Invalid credentials" });
     }
 
     const user = existingUser.toJSON()

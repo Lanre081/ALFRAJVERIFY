@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Mail, Lock } from "lucide-react";
 import useAuth from "../../hooks/useAuth.js";
 import { setAccessToken, setRefreshToken } from "../../Helpers/Auth/tokens.js";
+import { validateUserLogin } from "../../Validators/auth.validator.js";
 
 function Login() {
   // State init
@@ -73,8 +74,7 @@ function Login() {
             {/* FORM-LEVEL ERROR (backend / unexpected) */}
             {error && !fieldErrors.email && !fieldErrors.password && (
               <Alert severity="error" sx={{ mb: 2 }}>
-                {error?.response?.data?.message ||
-                  "Login failed. Please try again."}
+                {error}
               </Alert>
             )}
 

@@ -23,6 +23,11 @@ export function validateUserLogin(user) {
   // Password
   if (!user.password || user.password?.trim() === "") {
     errors.password = "Password is required";
+  } else if (user.password?.length < 8) {
+    errors.password = "Password should be at least 8 characters";
+  } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/.test(user.password)) {
+    errors.password =
+      "Password must include uppercase, lowercase, number, and special character";
   }
 
   return errors;
