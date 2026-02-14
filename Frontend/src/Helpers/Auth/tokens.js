@@ -1,5 +1,5 @@
 const ACCESS_TOKEN_KEY = 'access-token'
-const REFRESH_TOKEN_KEY = 'access-token'
+const REFRESH_TOKEN_KEY = 'refresh-token'
 
 export function getAccessToken(){
     return localStorage.getItem(ACCESS_TOKEN_KEY)
@@ -14,5 +14,5 @@ export function setAccessToken(data){
 }
 
 export function setRefreshToken(data){
-   localStorage.setItem(REFRESH_TOKEN_KEY_TOKEN_KEY, data)
+   localStorage.setItem(REFRESH_TOKEN_KEY, data)
 }

@@ -13,6 +13,7 @@ export default function useAuth() {
     try {
       const response = await apiCall();
       setResult(response);
+      console.log(response)
     } catch (err) {
       const message =
         err?.response?.data?.message || "Something went wrong";
