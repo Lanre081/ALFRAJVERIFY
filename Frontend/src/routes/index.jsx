@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import App from '../App.jsx'
-import ForgotPassword from '../pages/auths/forgot-password.jsx'
-import Login from '../pages/auths/login.jsx'
-import Signup from '../pages/auths/signup.jsx'
+import ForgotPassword from '../pages/auth/forgot-password.jsx'
+import Login from '../pages/auth/login.jsx'
+import Signup from '../pages/auth/signup.jsx'
 
 function AppRoutes() {
   return (

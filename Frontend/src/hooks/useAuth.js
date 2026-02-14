@@ -1,29 +1,32 @@
-import { useState } from "react";
-import authApi from "../apis/api.auth";
+  import { useState } from "react";
+  import authApi from "../apis/api.auth";
 
-export default function useAuth() {
-  const [data, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  export default function useAuth() {
+    const [data, setResult] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-  const execute = async (apiCall) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response= await apiCall();
-      setResult(response);
-    } catch (err) {
-      setError(err);
-      console.error(err, err?.response, err?.data);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const execute = async (apiCall) => {
+      setLoading(true);
+      setError(null);
 
-  const methods = {
-    login: (payload) => execute(authApi.login(payload)),
-    register: (payload) => execute(authApi.register(payload)),
-  };
+      try {
+        const response = await apiCall();
+        setResult(response);
+        console.log(response)
+      } catch (err) {
 
-  return { data, loading, error, ...methods };
-}
+        setError(err?.response?.data);  
+        console.error(err, err?.response);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const methods = {
+      login: (payload) => execute(() => authApi.login(payload)),
+      register: (payload) => execute(() => authApi.register(payload)),
+    };
+
+    return { data, loading, error, ...methods };
+  }
