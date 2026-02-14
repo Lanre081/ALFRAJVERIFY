@@ -60,6 +60,14 @@ export function validateUserRegister(user) {
     errors.email = "Please enter a valid email address";
   }
 
+  // Phone
+  if (user.phoneNumber) {
+    const phone = parsePhoneNumberFromString(user.phoneNumber, "NG");
+    if (!phone || !phone.isValid()) {
+      errors.phoneNumber = "Please enter a valid phone number";
+    }
+  }
+
   // Password
   if (!user.password) {
     errors.password = "Password is required";
