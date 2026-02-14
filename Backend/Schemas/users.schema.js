@@ -1,6 +1,6 @@
 const { Joi } = require("celebrate");
 
-const name = Joi.string()
+const username = Joi.string()
   .trim()
   .min(3)
   .max(100)
@@ -36,7 +36,7 @@ const password = Joi.string()
   .required();
 
 const registerSchema = Joi.object({
-  name: name,
+  username: username,
   email: email,
   password: password,
   confirmPassword: Joi.any().valid(Joi.ref("password")).required().messages({
