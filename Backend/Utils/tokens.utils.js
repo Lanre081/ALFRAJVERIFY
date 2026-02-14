@@ -3,7 +3,7 @@ const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const signAccessToken = (user) => {
   return jwt.sign({ ...user }, JWT_ACCESS_SECRET, {
@@ -16,6 +16,10 @@ const signRefreshToken = (user) => {
     expiresIn: "7d",
   });
 };
+
+function hashToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
 
 const verifyAccessToken = (token) => {
   return jwt.verify(token, JWT_ACCESS_SECRET);
@@ -31,12 +35,15 @@ async function verifyRefreshToken(token) {
 
   const { id } = userData;
 
-  const user = await usersCollection.findById(id).select("+refreshToken");
+  const hashed = hashToken(token);
 
-  if (!user) throw new Error("User not found");
+  const user = await usersCollection.findOne({
+    _id: id,
+    refreshTokenHash: hashed,
+  });
 
-  const match = token === user.refreshToken;
-  if (!match) throw new Error("Refresh token mismatch");
+  if (!user) throw new Error("Refresh token mismatch");
+
 
   return user;
 }
@@ -45,8 +52,9 @@ async function generateNewTokens(user) {
   const accessToken = signAccessToken(user);
   const refreshToken = signRefreshToken(user);
 
-  user.refreshToken = refreshToken;
-  await usersCollection.findByIdAndUpdate(user.id, { refreshToken });
+  const hashed = hashToken(refreshToken)
+
+  await usersCollection.findByIdAndUpdate(user.id, { refreshTokenHash: hashed });
 
   return { accessToken, refreshToken };
 }
