@@ -3,17 +3,21 @@ import SiteFooter from "../../components/SiteFooter.jsx";
 import SiteHeader from "../../components/SiteHeader.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { TextField, Button, Alert } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import useAuth from "../../hooks/useAuth.js";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { validateUserRegister } from "../../Validators/auth.validator.js";
 
 function Signup() {
   const [userData, setUserData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
+  const [backendErrs, setBackendErrs] = useState(null);
 
   const navigate = useNavigate();
 
   const { data, error, loading, register } = useAuth();
+
+  const validationErrs = useMemo(() => error?.validation?.body, [error]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,7 +47,7 @@ function Signup() {
         userData.phoneNumber,
         "NG",
       );
-      register({ ...userData, phoneNumber });
+      register({ ...userData, phoneNumber: phoneNumber.number });
     } else {
       register(userData);
     }
@@ -55,17 +59,15 @@ function Signup() {
     }
   }, [data]);
 
-   useEffect(() => {
-      let backendFieldErrors = "";
-      if (validationErrs) {
-        const { message } = validationErrs;
-  
-        backendFieldErrors = `${message}`; // or just message if you prefer
-      }
-      console.log(validationErrs, backendFieldErrors);
+  useEffect(() => {
+    let backendFieldErrors = "";
+    if (validationErrs) {
+      const { message } = validationErrs;
+
+      backendFieldErrors = `${message}`; // or just message if you prefer
       setBackendErrs(backendFieldErrors);
-    }, [error]);
-  
+    }
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-gray-50 text-slate-900">
@@ -155,6 +157,7 @@ function Signup() {
               variant="contained"
               sx={{ mt: 3, py: 1.2 }}
               disabled={loading}
+              loading={loading}
             >
               {loading ? "Creating account..." : "Create account"}
             </Button>

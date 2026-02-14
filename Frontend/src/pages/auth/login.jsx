@@ -67,9 +67,9 @@ function Login() {
       const { message } = validationErrs;
 
       backendFieldErrors = `${message}`; // or just message if you prefer
+          setBackendErrs(backendFieldErrors);
     }
-    console.log(validationErrs, backendFieldErrors);
-    setBackendErrs(backendFieldErrors);
+
   }, [error]);
 
   return (
