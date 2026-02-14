@@ -47,8 +47,8 @@ export function validateUserRegister(user) {
     errors.username = "Name is required";
   } else if (user.username?.length < 3) {
     errors.username = "Name must be at least 3 characters";
-  } else if(!/^[\p{L}\p{M}\d'’\.\-\s]+$/.test(user.username)){
-    errors.username = "Username contains invalid characters"
+  } else if (!/^[\p{L}\p{M}\d'’\.\-\s]+$/u.test(user.username)) {
+    errors.username = "Username contains invalid characters";
   }
 
   // Email
@@ -75,6 +75,8 @@ export function validateUserRegister(user) {
   if (!user.password) {
     errors.password = "Password is required";
   } else if (user.password?.length < 8) {
+    errors.password = "Password must be at least 8 characters";
+  } else if (user.password?.length > 128) {
     errors.password = "Password must be at least 8 characters";
   } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/.test(user.password)) {
     errors.password =
