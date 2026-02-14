@@ -10,6 +10,7 @@ import { validateUserRegister } from "../../Validators/auth.validator.js";
 function Signup() {
   const [userData, setUserData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
+
   const navigate = useNavigate();
 
   const { data, error, loading, register } = useAuth();
@@ -54,6 +55,18 @@ function Signup() {
     }
   }, [data]);
 
+   useEffect(() => {
+      let backendFieldErrors = "";
+      if (validationErrs) {
+        const { message } = validationErrs;
+  
+        backendFieldErrors = `${message}`; // or just message if you prefer
+      }
+      console.log(validationErrs, backendFieldErrors);
+      setBackendErrs(backendFieldErrors);
+    }, [error]);
+  
+
   return (
     <div className="min-h-screen bg-gray-50 text-slate-900">
       <SiteHeader />
@@ -71,12 +84,11 @@ function Signup() {
 
           <form onSubmit={handleSubmit} noValidate>
             {/* FORM-LEVEL ERROR */}
-            {fieldErrors.form ||
-              (error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                  {fieldErrors.form || error}
-                </Alert>
-              ))}
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {backendErrs || error?.message || "Something went wrong."}
+              </Alert>
+            )}
 
             <TextField
               fullWidth

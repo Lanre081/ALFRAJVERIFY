@@ -4,11 +4,6 @@ import { parsePhoneNumberFromString } from "libphonenumber-js";
 export function validateUserLogin(user) {
   const errors = {};
 
-  if (!user) {
-    errors.form = "Email and password are required";
-    return errors;
-  }
-
   // Email
   if (!user.email) {
     errors.email = "Please enter a valid email address";
@@ -36,11 +31,6 @@ export function validateUserLogin(user) {
 
 export function validateUserRegister(user) {
   const errors = {};
-
-  if (!user) {
-    errors.form = "All fields are required";
-    return errors;
-  }
 
   // Name
   if (!user.username || user.username.trim() === "") {

@@ -17,7 +17,6 @@
       } catch (err) {
 
         setError(err?.response?.data);  
-        console.log(error, err?.response?.data)
         console.error(err, err?.response);
       } finally {
         setLoading(false);
