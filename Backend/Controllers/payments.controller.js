@@ -4,7 +4,7 @@ const transactionsCollection = require("../DB/Models/transactions.models");
 
 const initialize_User_Balance_Top_Up = async (req, res) => {
   const amount = /* req.body.amount * 100 */ 5000 * 100;
-  const type = "TOP-UP"; // DO NOT CHANGE THE VALUE OF THIS VAR OR THERE WILL BE SERIOU CONSEQUENCES!
+  const type = "TOP-UP"; // DO NOT CHANGE THE VALUE OF THIS VAR OR THERE WILL BE SERIOUS CONSEQUENCES!
 
   const email = "test@email.com"; /*user.email*/
 
