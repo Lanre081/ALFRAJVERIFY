@@ -1,12 +1,14 @@
 const paystackApiClient = require("../Apis/paystack.api");
+import crypto from "crypto";
 
-const topUp = async (req, res) => {
-  const amount = "5000"; /* req.body */
+const topUpUserBalance = async (req, res) => {
+  const amount = /* req.body.amount * 100 */ 5000 * 100;
   // I'm not sure if amount is a string or number though.
 
   const email = "test@email.com"; /*user.email*/
   // I'll add the normal stuff once the test is complete
 
+  const reference = crypto.randomUUID();
   // const {amount}  = req.body;
   //const email = user.email
 
@@ -18,17 +20,19 @@ const topUp = async (req, res) => {
     const response = await paystackApiClient.post("/transaction/initialize", {
       amount,
       email,
+      reference,
     });
-    console.log(response.data);
-    res.send(response.data);
+
+    const { data } = response;
+    res.status(200).json({ data, success: true });
 
     // I think I shd send only auth url and store access code and refrence in db or smth
 
     // After payment is confirmed, we update user bal.... I have no idea how buh we'll get there :)
   } catch (error) {
     console.error(error);
-    res.send(error.data);
+    res.send(error?.data);
   }
 };
 
-module.exports = { topUp };
+module.exports = { topUpUserBalance };

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const TRANSACTION_STATUSES = ["Pending", "Processing", "Failed", "Successful"];
+const TRANSACTION_STATUSES = [ "Processing", "Failed", "Successful"];
 const TRANSACTION_TYPES = ["TOP-UP", "AIRTIME", "DATA"];
 
 const transactionSchema = new mongoose.Schema(
@@ -10,8 +10,13 @@ const transactionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    reference: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     status: {
-      default: "Pending",
+      default: "Processing",
       enum: TRANSACTION_STATUSES,
       required: true,
     },
