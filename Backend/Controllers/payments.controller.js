@@ -4,7 +4,7 @@ const transactionsCollection = require("../DB/Models/transactions.models");
 
 const initialize_User_Balance_Top_Up = async (req, res) => {
   const amount = /* req.body.amount * 100 */ 5000 * 100;
-  const type = "TOP-UP";
+  const type = "TOP-UP"; // DO NOT CHANGE THE VALUE OF THIS VAR OR THERE WILL BE SERIOU CONSEQUENCES!
 
   const email = "test@email.com"; /*user.email*/
 
@@ -14,7 +14,7 @@ const initialize_User_Balance_Top_Up = async (req, res) => {
   // const userId = req.user.id
 
   try {
-    const transactionRecord = await transactionsCollection.create({
+    await transactionsCollection.create({
       reference,
       userId,
       type,
@@ -30,12 +30,8 @@ const initialize_User_Balance_Top_Up = async (req, res) => {
     const authorization_url = response.data.data.authorization_url;
 
     res.status(200).json({ authorization_url, success: true });
-
-    // I think I shd send only auth url and store access code and refrence in db or smth
-
-    // After payment is confirmed, we update user bal.... I have no idea how buh we'll get there :)
   } catch (error) {
-    console.error("Payment init error:", error); // log for debugging
+    console.error("Payment init error:", error);
     res.status(500).json({
       success: false,
       message:
