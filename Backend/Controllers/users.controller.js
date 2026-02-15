@@ -3,7 +3,6 @@ const usersCollection = require("../DB/Models/users.model");
 const getAllUsers = async (req, res) => {
   try {
     const users = await usersCollection.find();
-
     res.status(200).json({ success: true, users });
   } catch (err) {
     console.error(err);
@@ -11,4 +10,4 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = {getAllUsers}
+module.exports = { getAllUsers };

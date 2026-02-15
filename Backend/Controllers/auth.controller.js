@@ -24,7 +24,6 @@ const registerUser = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User created successfully",
-      user,
     });
   } catch (error) {
     if (error.code === 11000) {
@@ -61,7 +60,7 @@ const loginUser = async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    const user = existingUser.toJSON()
+    const user = existingUser.toJSON();
     const tokens = await generateNewTokens(user);
 
     res.status(200).json({ success: true, tokens });
