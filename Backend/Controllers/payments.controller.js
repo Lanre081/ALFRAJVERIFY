@@ -1,5 +1,5 @@
 const paystackApiClient = require("../Apis/paystack.api");
-import crypto from "crypto";
+const crypto = require("crypto");
 
 const topUpUserBalance = async (req, res) => {
   const amount = /* req.body.amount * 100 */ 5000 * 100;
@@ -8,7 +8,7 @@ const topUpUserBalance = async (req, res) => {
   const email = "test@email.com"; /*user.email*/
   // I'll add the normal stuff once the test is complete
 
-  const reference = crypto.randomUUID();
+  const reference = crypto.randomUUID(); // Acts as an id for the transaction.
   // const {amount}  = req.body;
   //const email = user.email
 
@@ -22,9 +22,10 @@ const topUpUserBalance = async (req, res) => {
       email,
       reference,
     });
+ 
+    const authorization_url = response.data.data.authorization_url
 
-    const { data } = response;
-    res.status(200).json({ data, success: true });
+    res.status(200).json({ authorization_url, success: true });
 
     // I think I shd send only auth url and store access code and refrence in db or smth
 

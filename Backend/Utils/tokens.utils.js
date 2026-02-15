@@ -7,7 +7,7 @@ const crypto = require("crypto");
 
 const signAccessToken = (user) => {
   return jwt.sign({ ...user }, JWT_ACCESS_SECRET, {
-    expiresIn: "15m",
+    expiresIn: "1h",
   });
 };
 
