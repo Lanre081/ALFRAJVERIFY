@@ -10,7 +10,7 @@ const initialize_User_Balance_Top_Up = async (req, res) => {
 
   const reference = crypto.randomUUID(); // Acts as an id for the transaction.
   // const {amount}  = req.body;
-  //const email = user.email
+  // const email = user.email
   // const userId = req.user.id
 
   try {
@@ -29,7 +29,7 @@ const initialize_User_Balance_Top_Up = async (req, res) => {
 
     const authorization_url = response.data.authorization_url;
 
-    res.status(200).json({ authorization_url, success: true });
+    res.status(200).json({ authorization_url, success: true, reference });
   } catch (error) {
     console.error("Payment init error:", error);
     res.status(500).json({
@@ -40,4 +40,22 @@ const initialize_User_Balance_Top_Up = async (req, res) => {
   }
 };
 
-module.exports = { initialize_User_Balance_Top_Up };
+const verify_Transaction_Status = async (req, res) => {
+  try {
+    const { reference } = req.body;
+
+    const transactionStatus = await paystackApiClient.post(
+      `/transaction/verify/${reference}`,
+    );
+
+    res.status(200).json({ transactionStatus });
+  } catch (error) {
+    console.error("Payment verification error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Unable to fetch payment details. Please try again later.",
+    });
+  }
+};
+
+module.exports = { initialize_User_Balance_Top_Up, verify_Transaction_Status };
