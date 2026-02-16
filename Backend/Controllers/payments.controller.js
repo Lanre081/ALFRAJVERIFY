@@ -27,7 +27,7 @@ const initialize_User_Balance_Top_Up = async (req, res) => {
       reference,
     });
 
-    const authorization_url = response.data.data.authorization_url;
+    const authorization_url = response.data.authorization_url;
 
     res.status(200).json({ authorization_url, success: true });
   } catch (error) {
