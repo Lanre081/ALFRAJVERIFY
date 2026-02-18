@@ -26,7 +26,7 @@ app.use(
 
 app.use(express.json());
 
-app.use("/transaction", authMiddleware, transactionRouter);
+app.use("/transactions", authMiddleware, transactionRouter);
 app.use("/auth", authLimiter, authRouter);
 app.use("/users", userRouter);
 

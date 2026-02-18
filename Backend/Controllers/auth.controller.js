@@ -86,7 +86,7 @@ const refreshTokenController = async (req, res) => {
       err.message.includes("User not found") ||
       err.message.includes("mismatch")
     ) {
-      return res.status(403).json({ success: false, message: err.message });
+      return res.status(401).json({ success: false, message: err.message });
     }
 
     console.error(err, err?.message);

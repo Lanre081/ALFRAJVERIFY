@@ -3,15 +3,13 @@ const crypto = require("crypto");
 const transactionsCollection = require("../DB/Models/transactions.models");
 
 const initialize_User_Balance_Top_Up = async (req, res) => {
-  const amount = /* req.body.amount * 100 */ 5000 * 100;
+  const  amount   = req.body.amount* 100;
   const type = "TOP-UP"; // DO NOT CHANGE THE VALUE OF THIS VAR OR THERE WILL BE SERIOUS CONSEQUENCES!
-
-  const email = "test@email.com"; /*user.email*/
+  const { email } = req.user;
 
   const reference = crypto.randomUUID(); // Acts as an id for the transaction.
-  // const {amount}  = req.body;
-  // const email = user.email
-  // const userId = req.user.id
+
+  const userId = req.user.id;
 
   try {
     await transactionsCollection.create({
@@ -44,7 +42,7 @@ const verify_Transaction_Status = async (req, res) => {
   try {
     const { reference } = req.body;
 
-    const transactionStatus = await paystackApiClient.post(
+    const transactionStatus = await paystackApiClient.get(
       `/transaction/verify/${reference}`,
     );
 
