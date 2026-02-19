@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const transactionsCollection = require("../DB/Models/transactions.models");
 
 const initialize_User_Balance_Top_Up = async (req, res) => {
-  const  amount   = req.body.amount* 100;
+  const amount = req.body.amount * 100;
   const type = "TOP-UP"; // DO NOT CHANGE THE VALUE OF THIS VAR OR THERE WILL BE SERIOUS CONSEQUENCES!
   const { email } = req.user;
 
@@ -56,4 +56,16 @@ const verify_Transaction_Status = async (req, res) => {
   }
 };
 
-module.exports = { initialize_User_Balance_Top_Up, verify_Transaction_Status };
+const webhook_Handler = async (req, res) => {
+  try {
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "An error occurred." });
+  }
+};
+
+module.exports = {
+  initialize_User_Balance_Top_Up,
+  verify_Transaction_Status,
+  webhook_Handler,
+};
