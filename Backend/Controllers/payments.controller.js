@@ -78,40 +78,41 @@ const webhook_Handler = async (req, res) => {
     // Success case
 
     if (response.event === "charge.success") {
-
       const reference = response.data.reference;
       try {
         // Update transaction in db
-        const updated = await transactionsCollection.findOneAndUpdate(
-          { reference, status: "Processing" },
-          { status: "Successful" },
-          { new: true },
-        );
+        const updated_Transacation =
+          await transactionsCollection.findOneAndUpdate(
+            { reference, status: "Processing" },
+            { status: "Successful" },
+            { new: true },
+          );
 
-        if (!updated) {
-          return res.sendStatus(200);          // already processed or invalid reference
+        console.log(updated_Transacation);
+
+        if (!updated_Transacation) {
+          return res.sendStatus(200); // already processed or invalid reference
         }
 
-        const updated_Amount = updated.amount / 100
+        const updated_Amount = updated_Transacation.amount / 100;
 
         // Updates user balance in db
         const updated_User_Balance = await usersCollection.findByIdAndUpdate(
-          updated.userId,
+          updated_Transacation.userId,
           { $inc: { balance: updated_Amount } },
           { new: true },
         );
 
-        console.log(updated_User_Balance)
+        console.log(updated_User_Balance);
 
-        res.sendStatus(200);
+        return res.sendStatus(200);
       } catch (error) {
         console.error("Error updating transaction:", error);
         res.status(500).json({ success: false, message: "An error occured" });
       }
-    } 
-    
-    // Mark as failed incase of failure
+    }
 
+    // Mark as failed incase of failure
     else if (response.event === "charge.failure") {
       const reference = response.data.reference;
       try {
@@ -120,13 +121,12 @@ const webhook_Handler = async (req, res) => {
           { status: "Failed" },
           { new: true },
         );
-        res.sendStatus(200);
+        return res.sendStatus(200);
       } catch (error) {
         console.error(error);
         res.status(500);
       }
     }
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "An error occurred." });
