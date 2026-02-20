@@ -10,21 +10,25 @@ const transactionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
     reference: {
       type: String,
       required: true,
       unique: true,
     },
+
     status: {
       type: String,
       default: "Processing",
       enum: TRANSACTION_STATUSES,
       required: true,
     },
+
     amount:{
       type: Number, 
       required: true
-    }
+    },
+    
     type: {
       type: String,
       enum: TRANSACTION_TYPES,
