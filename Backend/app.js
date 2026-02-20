@@ -15,6 +15,7 @@ const transactionRouter = require("./Routers/payments.route");
 // Middlewares
 const { authLimiter } = require("./Middleware/rate-limiter.middleware");
 const authMiddleware = require("./Middleware/auth.middleware");
+const { webhook_Handler } = require("./Controllers/payments.controller");
 
 connectDB();
 
@@ -24,6 +25,13 @@ app.use(
   }),
 );
 
+// Webhooks
+app.post(
+  "/webhook/paystack",
+  express.raw({ type: "application/json" }),
+  webhook_Handler
+);
+
 app.use(express.json());
 
 app.use("/transactions", authMiddleware, transactionRouter);
@@ -31,7 +39,7 @@ app.use("/auth", authLimiter, authRouter);
 app.use("/users", userRouter);
 
 app.get("/health", (req, res) => {
-  res.send("Server says Heyyyy! :)");
+  res.json({ success: true, message: "Server says Heyyyy! :)" });
 });
 
 app.use(errors());

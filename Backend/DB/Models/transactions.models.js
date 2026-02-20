@@ -21,6 +21,10 @@ const transactionSchema = new mongoose.Schema(
       enum: TRANSACTION_STATUSES,
       required: true,
     },
+    amount:{
+      type: Number, 
+      required: true
+    }
     type: {
       type: String,
       enum: TRANSACTION_TYPES,
