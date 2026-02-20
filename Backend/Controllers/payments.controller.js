@@ -1,6 +1,7 @@
 const paystackApiClient = require("../Apis/paystack.api");
 const crypto = require("crypto");
-const transactionsCollection = require("../DB/Models/transactions.models");
+const transactionsCollection = require("../DB/Models/transactions.model");
+const usersCollection = require("../DB/Models/users.model");
 const { v4: uuidv4 } = require("uuid");
 
 const initialize_User_Balance_Top_Up = async (req, res) => {
@@ -27,11 +28,11 @@ const initialize_User_Balance_Top_Up = async (req, res) => {
       reference,
     });
 
-    const authorization_url = response.data.authorization_url;
+    const { authorization_url } = response.data;
 
     res.status(200).json({ authorization_url, success: true, reference });
   } catch (error) {
-    console.error("Payment init error:", error);
+    console.error("Payment init error:", error.message);
     res.status(500).json({
       success: false,
       message:
@@ -48,7 +49,7 @@ const verify_Transaction_Status = async (req, res) => {
       `/transaction/verify/${reference}`,
     );
 
-    res.status(200).json({ transactionStatus });
+    res.status(200).json({ success: true, transactionStatus });
   } catch (error) {
     console.error("Payment verification error:", error);
     res.status(500).json({
@@ -69,25 +70,63 @@ const webhook_Handler = async (req, res) => {
       .digest("hex");
 
     if (hash !== signature) {
-      return res.sendStatus(401); 
+      return res.sendStatus(401);
     }
 
     const response = JSON.parse(req.body.toString());
 
+    // Success case
+
     if (response.event === "charge.success") {
+
       const reference = response.data.reference;
       try {
+        // Update transaction in db
         const updated = await transactionsCollection.findOneAndUpdate(
-          { reference },
+          { reference, status: "Processing" },
           { status: "Successful" },
+          { new: true },
+        );
+
+        if (!updated) {
+          return res.sendStatus(200);          // already processed or invalid reference
+        }
+
+        const updated_Amount = updated.amount / 100
+
+        // Updates user balance in db
+        const updated_User_Balance = await usersCollection.findByIdAndUpdate(
+          updated.userId,
+          { $inc: { balance: updated_Amount } },
+          { new: true },
+        );
+
+        console.log(updated_User_Balance)
+
+        res.sendStatus(200);
+      } catch (error) {
+        console.error("Error updating transaction:", error);
+        res.status(500).json({ success: false, message: "An error occured" });
+      }
+    } 
+    
+    // Mark as failed incase of failure
+
+    else if (response.event === "charge.failure") {
+      const reference = response.data.reference;
+      try {
+        await transactionsCollection.findOneAndUpdate(
+          { reference, status: "Processing" },
+          { status: "Failed" },
           { new: true },
         );
         res.sendStatus(200);
       } catch (error) {
-        console.error("Error updating transaction:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
+        console.error(error);
+        res.status(500);
       }
     }
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "An error occurred." });
