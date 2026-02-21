@@ -13,10 +13,10 @@ const handleChargeSuccess = async (reference) => {
     console.log(updated_Transacation);
 
     if (!updated_Transacation) {
-      return res.sendStatus(200); // already processed or invalid reference
+      return { alreadyProcessed: true }; // Transaction was already processed or not found
     }
 
-    const updated_Amount = updated_Transacation.amount / 100; 
+    const updated_Amount = updated_Transacation.amount;
 
     // Updates user balance in db
     const updated_User_Balance = await usersCollection.findByIdAndUpdate(
@@ -26,6 +26,7 @@ const handleChargeSuccess = async (reference) => {
     );
 
     console.log(updated_User_Balance);
+    return { processed: true };
   } catch (error) {
     throw new Error("Error processing successful charge: " + error.message);
   }

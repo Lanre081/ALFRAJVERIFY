@@ -9,7 +9,7 @@ const {
 } = require("../Services/paystack.service");
 
 const initialize_User_Balance_Top_Up = async (req, res) => {
-  const amount = req.body.amount * 100;
+  const amount = req.body.amount;
   const type = "TOP-UP"; // DO NOT CHANGE THE VALUE OF THIS VAR OR THERE WILL BE SERIOUS CONSEQUENCES!
   const { email } = req.user;
 
@@ -27,7 +27,7 @@ const initialize_User_Balance_Top_Up = async (req, res) => {
     });
 
     const response = await paystackApiClient.post("/transaction/initialize", {
-      amount,
+      amount: amount * 100, // Because paystack expects kobo
       email,
       reference,
     });
@@ -70,9 +70,10 @@ const webhook_Handler = async (req, res) => {
 
   if (response.event === "charge.success") {
     try {
-      await handleChargeSuccess(reference);
-
-      res.sendStatus(200);
+      const result = await handleChargeSuccess(reference);
+      if (result.alreadyProcessed || result.processed) {
+        return res.sendStatus(200); // Idempotent response for already processed transactions
+      }
     } catch (error) {
       console.error("Error updating transaction:", error);
       res.status(500).json({ success: false, message: "An error occured" });
@@ -81,7 +82,6 @@ const webhook_Handler = async (req, res) => {
 
   // Failure event
   else if (response.event === "charge.failure") {
-    
     try {
       await handleChargeFailure(reference);
 
