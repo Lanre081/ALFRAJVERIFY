@@ -3,6 +3,10 @@ const crypto = require("crypto");
 const transactionsCollection = require("../DB/Models/transactions.model");
 const usersCollection = require("../DB/Models/users.model");
 const { v4: uuidv4 } = require("uuid");
+const {
+  handleChargeFailure,
+  handleChargeSuccess,
+} = require("../Services/paystack.service");
 
 const initialize_User_Balance_Top_Up = async (req, res) => {
   const amount = req.body.amount * 100;
@@ -60,60 +64,32 @@ const verify_Transaction_Status = async (req, res) => {
 };
 
 const webhook_Handler = async (req, res) => {
-  try {
-    if (response.event === "charge.success") {
-      const reference = response.data.reference;
-      try {
-        // Update transaction in db
-        const updated_Transacation =
-          await transactionsCollection.findOneAndUpdate(
-            { reference, status: "Processing" },
-            { status: "Successful" },
-            { new: true },
-          );
+  const reference = response.data.reference;
 
-        console.log(updated_Transacation);
+  // Success event
 
-        if (!updated_Transacation) {
-          return res.sendStatus(200); // already processed or invalid reference
-        }
+  if (response.event === "charge.success") {
+    try {
+      await handleChargeSuccess(reference);
 
-        const updated_Amount = updated_Transacation.amount / 100;
-
-        // Updates user balance in db
-        const updated_User_Balance = await usersCollection.findByIdAndUpdate(
-          updated_Transacation.userId,
-          { $inc: { balance: updated_Amount } },
-          { new: true },
-        );
-
-        console.log(updated_User_Balance);
-
-        return res.sendStatus(200);
-      } catch (error) {
-        console.error("Error updating transaction:", error);
-        res.status(500).json({ success: false, message: "An error occured" });
-      }
+      res.sendStatus(200);
+    } catch (error) {
+      console.error("Error updating transaction:", error);
+      res.status(500).json({ success: false, message: "An error occured" });
     }
+  }
 
-    // Mark as failed incase of failure
-    else if (response.event === "charge.failure") {
-      const reference = response.data.reference;
-      try {
-        await transactionsCollection.findOneAndUpdate(
-          { reference, status: "Processing" },
-          { status: "Failed" },
-          { new: true },
-        );
-        return res.sendStatus(200);
-      } catch (error) {
-        console.error(error);
-        res.status(500);
-      }
+  // Failure event
+  else if (response.event === "charge.failure") {
+    
+    try {
+      await handleChargeFailure(reference);
+
+      res.sendStatus(200);
+    } catch (error) {
+      console.error(error);
+      res.status(500);
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred." });
   }
 };
 

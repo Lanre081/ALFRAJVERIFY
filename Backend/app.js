@@ -16,7 +16,7 @@ const transactionRouter = require("./Routers/payments.route");
 const { authLimiter } = require("./Middleware/rate-limiter.middleware");
 const authMiddleware = require("./Middleware/auth.middleware");
 const { webhook_Handler } = require("./Controllers/payments.controller");
-const verifyPaystackWebhook = require("./Middleware/webhooks.middleware");
+const verifyPaystackWebhook = require("./Middleware/paystack_webhooks.middleware");
 
 connectDB();
 
