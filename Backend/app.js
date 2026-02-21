@@ -34,6 +34,7 @@ app.post("/webhook/paystack", express.raw({ type: "application/json" }), [
 
 app.use(express.json());
 
+// Routes
 app.use("/transactions", authMiddleware, transactionRouter);
 app.use("/auth", authLimiter, authRouter);
 app.use("/users", userRouter);
@@ -42,6 +43,7 @@ app.get("/health", (req, res) => {
   res.json({ success: true, message: "Server says Heyyyy! :)" });
 });
 
+// Celebrate errors middleware
 app.use(errors());
 
 module.exports = app;

@@ -18,6 +18,7 @@ const initialize_User_Balance_Top_Up = async (req, res) => {
   const userId = req.user.id;
 
   try {
+    // Create transaction doc in db
     await transactionsCollection.create({
       reference,
       userId,
@@ -26,6 +27,7 @@ const initialize_User_Balance_Top_Up = async (req, res) => {
       amount,
     });
 
+    // initialize paystack transaction
     const response = await paystackApiClient.post("/transaction/initialize", {
       amount: amount * 100, // Because paystack expects kobo
       email,

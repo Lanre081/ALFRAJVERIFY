@@ -34,6 +34,7 @@ const handleChargeSuccess = async (reference) => {
 
 const handleChargeFailure = async (reference) => {
   try {
+    // Marks transaction as failed in db
     await transactionsCollection.findOneAndUpdate(
       { reference, status: "Processing" },
       { status: "Failed" },
