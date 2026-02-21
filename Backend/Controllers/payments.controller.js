@@ -61,22 +61,6 @@ const verify_Transaction_Status = async (req, res) => {
 
 const webhook_Handler = async (req, res) => {
   try {
-    const signature = req.headers["x-paystack-signature"];
-    const PAYSTACK_SECRET = process.env.PAYSTACK_API_KEY;
-
-    const hash = crypto
-      .createHmac("sha512", PAYSTACK_SECRET)
-      .update(req.body)
-      .digest("hex");
-
-    if (hash !== signature) {
-      return res.sendStatus(401);
-    }
-
-    const response = JSON.parse(req.body.toString());
-
-    // Success case
-
     if (response.event === "charge.success") {
       const reference = response.data.reference;
       try {
