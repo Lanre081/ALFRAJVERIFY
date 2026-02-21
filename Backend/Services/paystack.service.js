@@ -2,8 +2,8 @@ const transactionsCollection = require("../DB/Models/transactions.model");
 const usersCollection = require("../DB/Models/users.model");
 
 const handleChargeSuccess = async (reference) => {
-  // Update transaction in db
   try {
+    // Update transaction in db
     const updated_Transacation = await transactionsCollection.findOneAndUpdate(
       { reference, status: "Processing" },
       { status: "Successful" },

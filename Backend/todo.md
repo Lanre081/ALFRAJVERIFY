@@ -1,3 +1,4 @@
-Payments webhook refactor TODO
+Payment webhook side effect
 
-- Move user balance update to a worker.
+- Guarantee the update of the user's balance once the transction is updated in db.
+- N.B: Sessions might do well here.
