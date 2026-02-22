@@ -1,28 +1,19 @@
 const { Joi } = require("celebrate");
+const { parsePhoneNumberFromString } = require("libphonenumber-js");
 
-const name = Joi.string()
+const username = Joi.string()
   .trim()
   .min(3)
   .max(100)
-  .pattern(/^[\p{L}\p{M}\d'’\.\-\s]+$/u)
+  .pattern(/^[\p{L}\p{M}\d_]{3,30}$/u)
   .messages({
-    "string.empty": "Name is required",
-    "string.min": "Name must be at least 3 characters",
-    "string.pattern.base": "Name contains invalid characters",
+    "string.empty": "Username is required",
+    "string.min": "Username must be at least 3 characters",
+    "string.pattern.base":
+      "Username must be 3-30 characters and contain only letters, numbers, or underscores",
   })
   .required();
 
-const phoneNumber = Joi.string()
-  .trim()
-  .pattern(/^[0-9]+$/)
-  .min(10)
-  .max(15)
-  .messages({
-    "string.pattern.base": "Phone number must contain only digits",
-    "string.min": "Phone number must be at least 10 digits",
-    "string.max": "Phone number must be at most 15 digits",
-  })
-  .optional();
 
 const email = Joi.string()
   .trim()
@@ -47,11 +38,27 @@ const password = Joi.string()
   })
   .required();
 
+const phoneNumber = Joi.string()
+  .custom((value, helpers) => {
+    if (!value) return value; // optional, skip if empty
+
+    const phone = parsePhoneNumberFromString(value, "NG"); // NG for Nigeria
+    if (!phone || !phone.isValid()) {
+      return helpers.error("any.invalid");
+    }
+
+    // Replace with normalized E.164
+    return phone.number;
+  })
+  .messages({
+    "any.invalid": "Please enter a valid phone number",
+  });
+
 const registerSchema = Joi.object({
-  name: name,
-  email: email,
-  phoneNumber: phoneNumber,
-  password: password,
+  username,
+  email,
+  phoneNumber,
+  password,
   confirmPassword: Joi.any().valid(Joi.ref("password")).required().messages({
     "any.only": "Passwords must match",
     "any.required": "Confirm password is required",
@@ -61,8 +68,8 @@ const registerSchema = Joi.object({
   .options({ stripUnknown: true });
 
 const loginSchema = Joi.object({
-  email: email,
-  password: password,
+  email,
+  password,
 })
   .required()
   .options({ stripUnknown: true });

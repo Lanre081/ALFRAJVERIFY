@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    username: {
       type: String,
       required: [true, "Name is required"],
       trim: true,
@@ -24,12 +24,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false,
       trim: true,
+      default: null
     },
     balance: {
       type: Number,
       required: true,
       default: 0,
     },
+    refreshTokenHash: { type: String, select: false },
   },
   {
     timestamps: true,
@@ -48,7 +50,6 @@ userSchema.set("toJSON", {
     return obj;
   },
 });
-
 
 const User = mongoose.model("User", userSchema, "users");
 
