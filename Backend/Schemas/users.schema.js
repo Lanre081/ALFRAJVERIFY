@@ -12,6 +12,18 @@ const name = Joi.string()
   })
   .required();
 
+const phoneNumber = Joi.string()
+  .trim()
+  .pattern(/^[0-9]+$/)
+  .min(10)
+  .max(15)
+  .messages({
+    "string.pattern.base": "Phone number must contain only digits",
+    "string.min": "Phone number must be at least 10 digits",
+    "string.max": "Phone number must be at most 15 digits",
+  })
+  .optional();
+
 const email = Joi.string()
   .trim()
   .lowercase()
@@ -38,6 +50,7 @@ const password = Joi.string()
 const registerSchema = Joi.object({
   name: name,
   email: email,
+  phoneNumber: phoneNumber,
   password: password,
   confirmPassword: Joi.any().valid(Joi.ref("password")).required().messages({
     "any.only": "Passwords must match",
