@@ -1,4 +1,4 @@
-const Joi = require("celebrate");
+const { Joi } = require("celebrate");
 
 const refreshTokenSchema = Joi.object({
   refreshToken: Joi.string().required(),

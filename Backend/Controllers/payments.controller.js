@@ -66,15 +66,16 @@ const verify_Transaction_Status = async (req, res) => {
 };
 
 const webhook_Handler = async (req, res) => {
-  const reference = response.data.reference;
+  const message = JSON.parse(req.body.toString());
+  const reference = message.data.reference;
 
   // Success event
 
-  if (response.event === "charge.success") {
+  if (message.event === "charge.success") {
     try {
       const result = await handleChargeSuccess(reference);
       if (result.alreadyProcessed || result.processed) {
-        return res.sendStatus(200); // Idempotent response for already processed transactions
+        return res.sendStatus(200); // Idempotent message for already processed transactions
       }
     } catch (error) {
       console.error("Error updating transaction:", error);
@@ -83,7 +84,7 @@ const webhook_Handler = async (req, res) => {
   }
 
   // Failure event
-  else if (response.event === "charge.failure") {
+  else if (message.event === "charge.failure") {
     try {
       await handleChargeFailure(reference);
 

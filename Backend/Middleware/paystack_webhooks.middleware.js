@@ -9,7 +9,7 @@ const verifyPaystackWebhook = (req, res, next) => {
 
   const hash = crypto
     .createHmac("sha512", process.env.PAYSTACK_API_KEY)
-    .update(req.rawBody)
+    .update(req.body)
     .digest("hex");
 
   if (hash !== signature) {
