@@ -14,6 +14,7 @@ const username = Joi.string()
   })
   .required();
 
+
 const email = Joi.string()
   .trim()
   .lowercase()
@@ -56,8 +57,8 @@ const phoneNumber = Joi.string()
 const registerSchema = Joi.object({
   username,
   email,
-  password,
   phoneNumber,
+  password,
   confirmPassword: Joi.any().valid(Joi.ref("password")).required().messages({
     "any.only": "Passwords must match",
     "any.required": "Confirm password is required",
