@@ -131,7 +131,7 @@ export default function DashboardPage() {
             {formatBalance(user?.balance)}
           </div>
           <div className="balance-id">
-            Account ID: {user?.id?.slice(-8)?.toUpperCase() || "--------"}
+            Account ID: {null}
           </div>
         </div>
 

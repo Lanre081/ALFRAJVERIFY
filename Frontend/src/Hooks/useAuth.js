@@ -15,7 +15,6 @@ export default function useAuth() {
       setData(response);
     } catch (err) {
       setError(err);
-      console.error(err, err?.response, err?.data);
     } finally {
       setLoading(false);
     }
