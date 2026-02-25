@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 const signAccessToken = (user) => {
-  return jwt.sign({ id: user.id, email: user.email }, JWT_ACCESS_SECRET, {
+  return jwt.sign({ id: user.id, email: user.email, username: user.username }, JWT_ACCESS_SECRET, {
     expiresIn: "1h",
   });
 };
