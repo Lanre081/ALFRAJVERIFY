@@ -1,13 +1,30 @@
 import React from "react";
-import { useAuth } from "../../AuthContext";
+import { getAccessToken } from "../../Helpers/Auth/tokens";
 import { useNavigate } from "react-router-dom";
 
+function parseJwt(token) {
+    try {
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const payload = decodeURIComponent(
+            atob(base64)
+                .split("")
+                .map((c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`)
+                .join(""),
+        );
+        return JSON.parse(payload);
+    } catch {
+        return null;
+    }
+}
+
 export default function DashboardPage() {
-    const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const user = parseJwt(getAccessToken() || "");
 
     function handleLogout() {
-        logout();
+        localStorage.removeItem("access-token");
+        localStorage.removeItem("refresh-token");
         navigate("/login");
     }
 
@@ -79,9 +96,9 @@ export default function DashboardPage() {
                 <div className="nav-brand">ALFRAJ</div>
                 <div className="nav-right">
                     <div className="nav-user">
-                        <div className="nav-avatar">{getInitials(user?.name)}</div>
+                        <div className="nav-avatar">{getInitials(user?.username)}</div>
                         <div className="nav-user-info">
-                            <div className="nav-user-name">{user?.name || "User"}</div>
+                            <div className="nav-user-name">{user?.username || "User"}</div>
                             <div className="nav-user-email">{user?.email || ""}</div>
                         </div>
                     </div>
@@ -101,7 +118,7 @@ export default function DashboardPage() {
                 {/* Welcome */}
                 <div className="welcome-section">
                     <div className="welcome-greeting">{getGreeting()}</div>
-                    <h1 className="welcome-name">{user?.name || "User"} 👋</h1>
+                    <h1 className="welcome-name">{user?.username || "User"} 👋</h1>
                 </div>
 
                 {/* Balance Card */}
@@ -144,7 +161,7 @@ export default function DashboardPage() {
                         </div>
                         <div className="info-item">
                             <span className="info-item-label">Full Name</span>
-                            <span className="info-item-value">{user?.name || "—"}</span>
+                            <span className="info-item-value">{user?.username || "—"}</span>
                         </div>
                         <div className="info-item">
                             <span className="info-item-label">Email</span>

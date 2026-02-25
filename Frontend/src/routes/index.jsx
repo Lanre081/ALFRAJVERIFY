@@ -9,7 +9,6 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<DashboardPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/signup" element={<SignupPage />} />
       </Routes>
     </BrowserRouter>
