@@ -96,7 +96,7 @@ function Login() {
             {/* FORM-LEVEL ERROR (backend / unexpected) */}
             {error && (
               <Alert severity="error" sx={{ mb: 2 }}>
-                {backendErrs || error?.message || "Something went wrong."}
+                {backendErrs || error?.response?.data?.message || "Something went wrong."}
               </Alert>
             )}
 

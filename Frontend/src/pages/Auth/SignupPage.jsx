@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../src/api";
 
 export default function SignupPage() {
     const navigate = useNavigate();
@@ -46,7 +45,6 @@ export default function SignupPage() {
 
         setLoading(true);
         try {
-            await registerUser(form);
             setSuccess("Account created successfully! Redirecting to login...");
             setTimeout(() => navigate("/login"), 2000);
         } catch (err) {

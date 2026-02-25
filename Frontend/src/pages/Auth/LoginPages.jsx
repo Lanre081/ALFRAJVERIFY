@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../Apis/auth.api";
-import { useAuth } from "../../AuthContext";
+
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const { login } = useAuth();
 
     const [form, setForm] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
@@ -17,21 +15,6 @@ export default function LoginPage() {
         setError("");
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-        setError("");
-        setLoading(true);
-
-        try {
-            const data = await loginUser(form);
-            login(data.user, data.token);
-            navigate("/dashboard");
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    }
 
     return (
         <div className="auth-layout">
@@ -78,7 +61,7 @@ export default function LoginPage() {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} id="login-form">
+                    <form onSubmit={null} id="login-form">
                         <div className="form-group">
                             <label className="form-label" htmlFor="login-email">Email address</label>
                             <div className="form-input-wrapper">
@@ -89,7 +72,7 @@ export default function LoginPage() {
                                     name="email"
                                     placeholder="you@example.com"
                                     value={form.email}
-                                    onChange={handleChange}
+                                    onChange={null}
                                     required
                                     autoComplete="email"
                                 />

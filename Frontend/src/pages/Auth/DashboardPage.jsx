@@ -1,13 +1,13 @@
 import React from "react";
-import { useAuth } from "../Frontend/src/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
+
+    const navigate = useNavigate()
+
 
     function handleLogout() {
-        logout();
+
         navigate("/login");
     }
 
@@ -79,10 +79,10 @@ export default function DashboardPage() {
                 <div className="nav-brand">ALFRAJ</div>
                 <div className="nav-right">
                     <div className="nav-user">
-                        <div className="nav-avatar">{getInitials(user?.name)}</div>
+                        <div className="nav-avatar"></div>
                         <div className="nav-user-info">
-                            <div className="nav-user-name">{user?.name || "User"}</div>
-                            <div className="nav-user-email">{user?.email || ""}</div>
+                            <div className="nav-user-name">{/*user?.name ||*/ "User"}</div>
+                            <div className="nav-user-email">{/*user?.email ||*/  ""}</div>
                         </div>
                     </div>
                     <button
@@ -101,7 +101,7 @@ export default function DashboardPage() {
                 {/* Welcome */}
                 <div className="welcome-section">
                     <div className="welcome-greeting">{getGreeting()}</div>
-                    <h1 className="welcome-name">{user?.name || "User"} 👋</h1>
+                    <h1 className="welcome-name">{/*user?.name||*/  "User"} 👋</h1>
                 </div>
 
                 {/* Balance Card */}
@@ -109,9 +109,9 @@ export default function DashboardPage() {
                     <div className="balance-label">Available Balance</div>
                     <div className="balance-amount">
                         <span className="balance-currency">₦</span>
-                        {formatBalance(user?.balance)}
+                        {/* {formatBalance(user?.balance)} */}
                     </div>
-                    <div className="balance-id">Account ID: {user?.id?.slice(-8)?.toUpperCase() || "--------"}</div>
+                    <div className="balance-id">Account ID: </div>
                 </div>
 
                 {/* Quick Actions */}
@@ -144,15 +144,15 @@ export default function DashboardPage() {
                         </div>
                         <div className="info-item">
                             <span className="info-item-label">Full Name</span>
-                            <span className="info-item-value">{user?.name || "—"}</span>
+                            {/* <span className="info-item-value">{user?.name || "—"}</span> */}
                         </div>
                         <div className="info-item">
                             <span className="info-item-label">Email</span>
-                            <span className="info-item-value">{user?.email || "—"}</span>
+                            {/* <span className="info-item-value">{user?.email || "—"}</span> */}
                         </div>
                         <div className="info-item">
                             <span className="info-item-label">Phone</span>
-                            <span className="info-item-value">{user?.phoneNumber || "Not set"}</span>
+                            {/* <span className="info-item-value">{user?.phoneNumber || "Not set"}</span> */}
                         </div>
                     </div>
 
