@@ -10,4 +10,15 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers };
+const getUserData = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const data = await usersCollection.findById(userId);
+    res.status(200).json({ success: true, data });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "An error occured" });
+  }
+};
+
+module.exports = { getAllUsers, getUserData };
