@@ -37,7 +37,7 @@ app.use(express.json());
 // Routes
 app.use("/transactions", authMiddleware, transactionRouter);
 app.use("/auth", authLimiter, authRouter);
-app.use("/users", userRouter);
+app.use("/user", userRouter);
 
 app.get("/health", (req, res) => {
   res.json({ success: true, message: "Server says Heyyyy! :)" });

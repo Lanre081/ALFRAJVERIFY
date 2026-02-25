@@ -1,15 +1,23 @@
-import React from "react";
 import {
   deleteAccessToken,
   deleteRefreshToken,
-  getAccessToken,
 } from "../../Helpers/Auth/tokens";
 import { useNavigate } from "react-router-dom";
 import getUserData from "../../Helpers/Utils/jwt.util";
+import useUserData from "../../Hooks/useUserData";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const user = getUserData();
+
+  const { data, loading, error, getProfile } = useUserData();
+
+  const userData = data?.data
+
+  useEffect(() => {
+    getProfile();
+  }, []);
 
   function handleLogout() {
     deleteAccessToken();
@@ -127,8 +135,8 @@ export default function DashboardPage() {
         <div className="balance-card" id="balance-card">
           <div className="balance-label">Available Balance</div>
           <div className="balance-amount">
-            <span className="balance-currency">₦</span>
-            {formatBalance(user?.balance)}
+            <span className={`balance-currency`}>₦</span>
+            {userData ? formatBalance(userData?.balance) : loading ? "Loading..." : "Failed to load balance"}
           </div>
           <div className="balance-id">
             Account ID: {null}
