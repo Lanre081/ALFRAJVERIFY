@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import LoginPage from "./pages/LoginPages";
-import SignupPage from "./pages/SignupPage";
-import DashboardPage from "./pages/DashboardPage";
+import LoginPage from "./pages/Auth/LoginPages";
+import SignupPage from "./pages/Auth/SignupPage";
+import DashboardPage from "./pages/Auth/DashboardPage";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
