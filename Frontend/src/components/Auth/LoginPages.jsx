@@ -1,20 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import useAuth from "../../Hooks/useAuth";
+import { saveAccessToken, saveRefreshToken } from "../../Helpers/Auth/tokens";
+import { validateUserLogin } from "../../Validators/auth.validator";
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const { login, data, error, loading } = useAuth();
 
     const [form, setForm] = useState({ email: "", password: "" });
+    const [formErrors, setFormErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
 
     function handleChange(e) {
-        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-        setError("");
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+        setFormErrors((prev) => ({ ...prev, [name]: "" }));
     }
 
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        const validationErrors = validateUserLogin(form);
+        setFormErrors(validationErrors);
+
+        if (Object.keys(validationErrors).length > 0) {
+            return;
+        }
+
+        login(form);
+    }
+
+    useEffect(() => {
+        if (!data?.success || !data?.tokens) return;
+
+        saveAccessToken(data.tokens.accessToken);
+        saveRefreshToken(data.tokens.refreshToken);
+        navigate("/");
+    }, [data, navigate]);
+
+
+    const backendErrorMessage = useMemo(() => (
+        error?.response?.data?.message ||
+        error?.response?.data?.validation?.body?.message ||
+        error?.message ||
+        ""
+    ), [error]);
 
     return (
         <div className="auth-layout">
@@ -55,13 +86,13 @@ export default function LoginPage() {
                         <p>Sign in to your account to continue</p>
                     </div>
 
-                    {error && (
+                    {backendErrorMessage && (
                         <div className="alert alert-error" id="login-error">
-                            <span>⚠</span> {error}
+                            <span>⚠</span> {backendErrorMessage}
                         </div>
                     )}
 
-                    <form onSubmit={null} id="login-form">
+                    <form onSubmit={handleSubmit} id="login-form">
                         <div className="form-group">
                             <label className="form-label" htmlFor="login-email">Email address</label>
                             <div className="form-input-wrapper">
@@ -72,12 +103,13 @@ export default function LoginPage() {
                                     name="email"
                                     placeholder="you@example.com"
                                     value={form.email}
-                                    onChange={null}
+                                    onChange={handleChange}
                                     required
                                     autoComplete="email"
                                 />
                                 <span className="form-icon">✉</span>
                             </div>
+                            {formErrors.email && <small className="form-error-text">{formErrors.email}</small>}
                         </div>
 
                         <div className="form-group">
@@ -104,6 +136,7 @@ export default function LoginPage() {
                                     {showPassword ? "🙈" : "👁"}
                                 </button>
                             </div>
+                            {formErrors.password && <small className="form-error-text">{formErrors.password}</small>}
                         </div>
 
                         <button
