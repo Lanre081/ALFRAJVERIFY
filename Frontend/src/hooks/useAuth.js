@@ -2,17 +2,19 @@
   import authApi from "../apis/api.auth";
 
   export default function useAuth() {
-    const [data, setResult] = useState(null);
+    const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const execute = async (apiCall) => {
       setLoading(true);
       setError(null);
+      setData(null)
+      
 
       try {
         const response = await apiCall();
-        setResult(response);
+        setData(response);
         console.log(response)
       } catch (err) {
 
