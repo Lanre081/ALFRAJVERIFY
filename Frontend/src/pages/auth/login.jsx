@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { TextField, Button, InputAdornment, Alert } from "@mui/material";
 import { useState, useEffect, useMemo } from "react";
 import { Mail, Lock } from "lucide-react";
-import useAuth from "../../hooks/useAuth.js";
+import useAuth from "../../Hooks/useAuth.js";
 import {
   saveAccessToken,
   saveRefreshToken,
