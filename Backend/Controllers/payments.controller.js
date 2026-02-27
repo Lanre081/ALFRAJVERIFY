@@ -1,34 +1,103 @@
 const paystackApiClient = require("../Apis/paystack.api");
+const crypto = require("crypto");
+const transactionsCollection = require("../DB/Models/transactions.model");
+const usersCollection = require("../DB/Models/users.model");
+const { v4: uuidv4 } = require("uuid");
+const {
+  handleChargeFailure,
+  handleChargeSuccess,
+} = require("../Services/paystack.service");
 
-const topUp = async (req, res) => {
-  const amount = "5000"; /* req.body */
-  // I'm not sure if amount is a string or number though.
+const initialize_User_Balance_Top_Up = async (req, res) => {
+  const amount = req.body.amount;
+  const type = "TOP-UP"; // DO NOT CHANGE THE VALUE OF THIS VAR OR THERE WILL BE SERIOUS CONSEQUENCES!
+  const { email } = req.user;
 
-  const email = "test@email.com"; /*user.email*/
-  // I'll add the normal stuff once the test is complete
+  const reference = uuidv4(); // Acts as an id for the transaction.
 
-  // const {amount}  = req.body;
-  //const email = user.email
-
-  const Amt_To_Be_Paid = amount * 100;
-
-  // Note the above for dev sanity
+  const userId = req.user.id;
 
   try {
-    const response = await paystackApiClient.post("/transaction/initialize", {
+    // Create transaction doc in db
+    await transactionsCollection.create({
+      reference,
+      userId,
+      type,
+      status: "Processing",
       amount,
-      email,
     });
-    console.log(response.data);
-    res.send(response.data);
 
-    // I think I shd send only auth url and store access code and refrence in db or smth
+    // initialize paystack transaction
+    const response = await paystackApiClient.post("/transaction/initialize", {
+      amount: amount * 100, // Because paystack expects kobo
+      email,
+      reference,
+    });
 
-    // After payment is confirmed, we update user bal.... I have no idea how buh we'll get there :)
+    const { authorization_url } = response.data;
+
+    res.status(200).json({ authorization_url, success: true, reference });
   } catch (error) {
-    console.error(error);
-    res.send(error.data);
+    console.error("Payment init error:", error.message);
+    res.status(500).json({
+      success: false,
+      message:
+        "Unable to initialize payment at this time. Please try again later.",
+    });
   }
 };
 
-module.exports = { topUp };
+const verify_Transaction_Status = async (req, res) => {
+  try {
+    const { reference } = req.body;
+
+    const transactionStatus = await paystackApiClient.get(
+      `/transaction/verify/${reference}`,
+    );
+
+    res.status(200).json({ success: true, transactionStatus });
+  } catch (error) {
+    console.error("Payment verification error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Unable to fetch payment details. Please try again later.",
+    });
+  }
+};
+
+const webhook_Handler = async (req, res) => {
+  const message = JSON.parse(req.body.toString());
+  const reference = message.data.reference;
+
+  // Success event
+
+  if (message.event === "charge.success") {
+    try {
+      const result = await handleChargeSuccess(reference);
+      if (result.alreadyProcessed || result.processed) {
+        return res.sendStatus(200); // Idempotent message for already processed transactions
+      }
+    } catch (error) {
+      console.error("Error updating transaction:", error);
+      res.status(500).json({ success: false, message: "An error occured" });
+    }
+  }
+
+  // Failure event
+  else if (message.event === "charge.failure") {
+    try {
+      await handleChargeFailure(reference);
+
+      res.sendStatus(200);
+    } catch (error) {
+      console.error(error);
+      res.status(500);
+    }
+  }
+};
+
+module.exports = {
+  initialize_User_Balance_Top_Up,
+  verify_Transaction_Status,
+  webhook_Handler,
+};

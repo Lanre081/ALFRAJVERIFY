@@ -1,37 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../api";
-import { useAuth } from "../AuthContext";
+import useAuth from "../../Hooks/useAuth";
+import { saveAccessToken, saveRefreshToken } from "../../Helpers/Auth/tokens";
+import { validateUserLogin } from "../../Validators/auth.validator";
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, data, error, loading } = useAuth();
 
     const [form, setForm] = useState({ email: "", password: "" });
+    const [formErrors, setFormErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
 
     function handleChange(e) {
-        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-        setError("");
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+        setFormErrors((prev) => ({ ...prev, [name]: "" }));
     }
 
-    async function handleSubmit(e) {
+    function handleSubmit(e) {
         e.preventDefault();
-        setError("");
-        setLoading(true);
 
-        try {
-            const data = await loginUser(form);
-            login(data.user, data.token);
-            navigate("/dashboard");
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+        const validationErrors = validateUserLogin(form);
+        setFormErrors(validationErrors);
+
+        if (Object.keys(validationErrors).length > 0) {
+            return;
         }
+
+        login(form);
     }
+
+    useEffect(() => {
+        if (!data?.success || !data?.tokens) return;
+
+        saveAccessToken(data.tokens.accessToken);
+        saveRefreshToken(data.tokens.refreshToken);
+        navigate("/");
+    }, [data, navigate]);
+
+
+    const backendErrorMessage = useMemo(() => (
+        error?.response?.data?.message ||
+        error?.response?.data?.validation?.body?.message ||
+        error?.message ||
+        ""
+    ), [error]);
 
     return (
         <div className="auth-layout">
@@ -72,9 +86,9 @@ export default function LoginPage() {
                         <p>Sign in to your account to continue</p>
                     </div>
 
-                    {error && (
+                    {backendErrorMessage && (
                         <div className="alert alert-error" id="login-error">
-                            <span>⚠</span> {error}
+                            <span>⚠</span> {backendErrorMessage}
                         </div>
                     )}
 
@@ -95,6 +109,7 @@ export default function LoginPage() {
                                 />
                                 <span className="form-icon">✉</span>
                             </div>
+                            {formErrors.email && <small className="form-error-text">{formErrors.email}</small>}
                         </div>
 
                         <div className="form-group">
@@ -121,6 +136,7 @@ export default function LoginPage() {
                                     {showPassword ? "🙈" : "👁"}
                                 </button>
                             </div>
+                            {formErrors.password && <small className="form-error-text">{formErrors.password}</small>}
                         </div>
 
                         <button

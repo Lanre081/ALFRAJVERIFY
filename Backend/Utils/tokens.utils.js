@@ -6,8 +6,8 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 const signAccessToken = (user) => {
-  return jwt.sign({ ...user }, JWT_ACCESS_SECRET, {
-    expiresIn: "15m",
+  return jwt.sign({ id: user.id, email: user.email, username: user.username }, JWT_ACCESS_SECRET, {
+    expiresIn: "1h",
   });
 };
 
@@ -44,7 +44,6 @@ async function verifyRefreshToken(token) {
 
   if (!user) throw new Error("Refresh token mismatch");
 
-
   return user;
 }
 
@@ -52,9 +51,11 @@ async function generateNewTokens(user) {
   const accessToken = signAccessToken(user);
   const refreshToken = signRefreshToken(user);
 
-  const hashed = hashToken(refreshToken)
+  const hashed = hashToken(refreshToken);
 
-  await usersCollection.findByIdAndUpdate(user.id, { refreshTokenHash: hashed });
+  await usersCollection.findByIdAndUpdate(user.id, {
+    refreshTokenHash: hashed,
+  });
 
   return { accessToken, refreshToken };
 }

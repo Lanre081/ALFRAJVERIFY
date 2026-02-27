@@ -1,60 +1,59 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../api";
+import useAuth from "../../Hooks/useAuth";
+import { validateUserRegister } from "../../Validators/auth.validator";
 
 export default function SignupPage() {
     const navigate = useNavigate();
+    const { register, data, error, loading } = useAuth();
 
     const [form, setForm] = useState({
-        name: "",
+        username: "",
         email: "",
         phoneNumber: "",
         password: "",
         confirmPassword: "",
     });
+    const [formErrors, setFormErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
-    const [loading, setLoading] = useState(false);
 
     function handleChange(e) {
-        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-        setError("");
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+        setFormErrors((prev) => ({ ...prev, [name]: "" }));
     }
 
-    function validate() {
-        if (form.name.trim().length < 3) return "Name must be at least 3 characters";
-        if (!form.email.trim()) return "Email is required";
-        if (form.password.length < 8) return "Password must be at least 8 characters";
-        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/.test(form.password))
-            return "Password must include uppercase, lowercase, number, and special character";
-        if (form.password !== form.confirmPassword) return "Passwords do not match";
-        return null;
-    }
-
-    async function handleSubmit(e) {
+    function handleSubmit(e) {
         e.preventDefault();
-        setError("");
-        setSuccess("");
 
-        const validationError = validate();
-        if (validationError) {
-            setError(validationError);
+        const validationErrors = validateUserRegister(form);
+        setFormErrors(validationErrors);
+
+        if (Object.keys(validationErrors).length > 0) {
             return;
         }
 
-        setLoading(true);
-        try {
-            await registerUser(form);
-            setSuccess("Account created successfully! Redirecting to login...");
-            setTimeout(() => navigate("/login"), 2000);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
+        register(form);
     }
+
+    useEffect(() => {
+        if (!data?.success) return;
+
+        const timer = setTimeout(() => navigate("/login"), 2000);
+        return () => clearTimeout(timer);
+    }, [data, navigate]);
+
+    const successMessage = useMemo(() => (
+        data?.success ? (data?.message || "Account created successfully! Redirecting to login...") : ""
+    ), [data]);
+
+    const backendErrorMessage = useMemo(() => (
+        error?.response?.data?.message ||
+        error?.response?.data?.validation?.body?.message ||
+        error?.message ||
+        ""
+    ), [error]);
 
     return (
         <div className="auth-layout">
@@ -95,14 +94,14 @@ export default function SignupPage() {
                         <p>Start your journey with ALFRAJ Verify</p>
                     </div>
 
-                    {error && (
+                    {backendErrorMessage && (
                         <div className="alert alert-error" id="signup-error">
-                            <span>⚠</span> {error}
+                            <span>⚠</span> {backendErrorMessage}
                         </div>
                     )}
-                    {success && (
+                    {successMessage && (
                         <div className="alert alert-success" id="signup-success">
-                            <span>✓</span> {success}
+                            <span>✓</span> {successMessage}
                         </div>
                     )}
 
@@ -114,15 +113,16 @@ export default function SignupPage() {
                                     id="signup-name"
                                     className="form-input"
                                     type="text"
-                                    name="name"
+                                    name="username"
                                     placeholder="John Doe"
-                                    value={form.name}
+                                    value={form.username}
                                     onChange={handleChange}
                                     required
                                     autoComplete="name"
                                 />
                                 <span className="form-icon">👤</span>
                             </div>
+                            {formErrors.username && <small className="form-error-text">{formErrors.username}</small>}
                         </div>
 
                         <div className="form-group">
@@ -141,6 +141,7 @@ export default function SignupPage() {
                                 />
                                 <span className="form-icon">✉</span>
                             </div>
+                            {formErrors.email && <small className="form-error-text">{formErrors.email}</small>}
                         </div>
 
                         <div className="form-group">
@@ -160,6 +161,7 @@ export default function SignupPage() {
                                 />
                                 <span className="form-icon">📞</span>
                             </div>
+                            {formErrors.phoneNumber && <small className="form-error-text">{formErrors.phoneNumber}</small>}
                         </div>
 
                         <div className="form-group">
@@ -186,6 +188,7 @@ export default function SignupPage() {
                                     {showPassword ? "🙈" : "👁"}
                                 </button>
                             </div>
+                            {formErrors.password && <small className="form-error-text">{formErrors.password}</small>}
                         </div>
 
                         <div className="form-group">
@@ -212,6 +215,7 @@ export default function SignupPage() {
                                     {showConfirm ? "🙈" : "👁"}
                                 </button>
                             </div>
+                            {formErrors.confirmPassword && <small className="form-error-text">{formErrors.confirmPassword}</small>}
                         </div>
 
                         <button

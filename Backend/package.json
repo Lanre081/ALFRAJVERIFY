@@ -29,6 +29,7 @@
     "jsonwebtoken": "^9.0.3",
     "libphonenumber-js": "^1.12.37",
     "mongoose": "^9.1.6",
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "uuid": "^13.0.0"
   }
 }
